@@ -96,7 +96,7 @@ function PesquisaAvancada() {
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <button style={{ width: '240px' }} className="btn bg-primary text-white">Buscar</button>
+                                            <button style={{ width: '240px' }} className="btn bg-primary text-white btn-sm">Buscar</button>
                                         </td>
                                     </tr>
                                 </tbody>

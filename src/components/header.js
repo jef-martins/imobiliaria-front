@@ -18,11 +18,11 @@ class Header extends Component {
             <div className="fixed-top bg-primary text-white">
                 <div className="btn-toolbar justify-content-between mt-3 mb-2 tamanho" role="toolbar" aria-label="Toolbar with button groups">
                     <div className="btn-group fonte" role="group" aria-label="First group">
-                        <Link className="btn btn-sm link-light" type="button">INÍCIO</Link>
-                        <Link className="btn btn-sm link-light" type="button">VENDA</Link>
-                        <Link className="btn btn-sm link-light" type="button">LOCAÇÃO</Link>
-                        <Link className="btn btn-sm link-light" type="button">LANÇAMENTO</Link>
-                        <Link className="btn btn-sm link-light" type="button">CONTATO</Link>
+                        <Link to="/" className="btn btn-sm link-light" type="button">INÍCIO</Link>
+                        <Link to="/venda" className="btn btn-sm link-light" type="button">VENDA</Link>
+                        <Link to="/#" className="btn btn-sm link-light" type="button">LOCAÇÃO</Link>
+                        <Link to="/#" className="btn btn-sm link-light" type="button">LANÇAMENTO</Link>
+                        <Link to="/#" className="btn btn-sm link-light" type="button">CONTATO</Link>
                         <div className="dropdown">
                             <button className="btn btn-sm link-light dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                 INSTITUCIONAL
