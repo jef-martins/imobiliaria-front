@@ -7,7 +7,7 @@ import Menu from '../components/menu';
 import Itens from '../components/itens';
 
 
-function Venda() {
+function Locacao() {
     return (
         <div>
             <Header />
@@ -18,7 +18,7 @@ function Venda() {
                         <Menu />
                     </div>
                     <div className="col-9">
-                        <Itens qtd="140"/>
+                        <Itens qtd="65"/>
                     </div>
                 </div>
             </div>
@@ -27,4 +27,4 @@ function Venda() {
     );
 }
 
-export default Venda;
+export default Locacao;

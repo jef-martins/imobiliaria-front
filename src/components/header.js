@@ -20,17 +20,17 @@ class Header extends Component {
                     <div className="btn-group fonte" role="group" aria-label="First group">
                         <Link to="/" className="btn btn-sm link-light" type="button">INÍCIO</Link>
                         <Link to="/venda" className="btn btn-sm link-light" type="button">VENDA</Link>
-                        <Link to="/#" className="btn btn-sm link-light" type="button">LOCAÇÃO</Link>
+                        <Link to="/locacao" className="btn btn-sm link-light" type="button">LOCAÇÃO</Link>
                         <Link to="/#" className="btn btn-sm link-light" type="button">LANÇAMENTO</Link>
-                        <Link to="/#" className="btn btn-sm link-light" type="button">CONTATO</Link>
+                        <Link to="/contato" className="btn btn-sm link-light" type="button">CONTATO</Link>
                         <div className="dropdown">
                             <button className="btn btn-sm link-light dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                 INSTITUCIONAL
                             </button>
                             <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a className="dropdown-item" href="#">Sobre nós</a></li>
-                                <li><a className="dropdown-item" href="#">Trabalhe conosco</a></li>
-                                <li><a className="dropdown-item" href="#">Contato</a></li>
+                                <li><Link className="dropdown-item" href="#">Sobre nós</Link></li>
+                                <li><Link className="dropdown-item" href="#">Trabalhe conosco</Link></li>
+                                <li><Link className="dropdown-item" to="/contato">Contato</Link></li>
                             </ul>
                         </div>
                     </div>

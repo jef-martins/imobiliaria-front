@@ -1,6 +1,5 @@
 import '../App.css';
 import '../bootstrap.css';
-import road from '../img/road.jpg';
 
 
 function Destaque(props) {
@@ -10,7 +9,7 @@ function Destaque(props) {
             <div className="card mb-4">
                 <div className="row g-0">
                     <div className="col-md-4">
-                        <img style={{ width: "240px" }} src={road} alt="..." />
+                        <img style={{ width: "240px" }} src={props.foto} alt="..." />
                     </div>
                     <div className="col-md-8">
                         <div className="card-body">
