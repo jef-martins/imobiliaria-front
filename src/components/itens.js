@@ -28,7 +28,7 @@ class Itens extends Component {
                     <div className="col-8"></div>
                     <div className="col-4">
                         <div className="input-group">
-                            <label className="input-group-text texto" for="inputGroupSelect01">Ordenar por</label>
+                            <label className="input-group-text texto" htmlFor="inputGroupSelect01">Ordenar por</label>
                             <select className="form-select form-select-sm texto" id="inputGroupSelect01">
                                 <option >Menor Preço</option>
                                 <option value="1">Maior Preço</option>
@@ -40,11 +40,12 @@ class Itens extends Component {
                 </div>
                 {
                     this.state.fotos.map((item) =>
-                        <div key={item.idFoto} style={{ width: "900px" }}><Destaque foto={item.url} /></div>
+                        item.capa ?
+                            <div key={item.idFoto} style={{ width: "900px" }}><Destaque foto={item.url} idDestaque={item.idImovel}/></div>
+                        :
+                        ""
                     )
                 }
-                {/*  <div style={{ width: "900px" }}><Destaque /></div>
-            <div style={{ width: "900px" }}><Destaque /></div> */}
                 <div className="row">
                     <div className="col-4"></div>
                     <div className="btn-group btn-group-sm col-4" role="group" aria-label="...">

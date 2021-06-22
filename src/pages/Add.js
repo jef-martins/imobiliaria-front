@@ -16,46 +16,132 @@ class Venda extends Component {
                 referencia: '',
                 preco: '',
                 area: '',
-                areaConstruida: ''
+                areaConstruida: '',
+                descricao: ''
             },
-            foto: '',
+            fotos: {
+                foto: [],
+                capa: []
+            },
+            comodos: {
+                descricao: [],
+                qtd: []
+            },
+            arrComodos:[]
         }
         this.setForm = this.setForm.bind(this);
         this.onSave = this.onSave.bind(this);
+        this.setCapa = this.setCapa.bind(this);
+        this.setComodo = this.setComodo.bind(this);
         this.fileInput = React.createRef();
     }
 
     onSave = async () => {
+        let cont = 0;
+        let response2, response3;
         const response = await api.post('imovel', {
             referencia: this.state.form.referencia,
             preco: this.state.form.preco,
             area: this.state.form.area,
             areaConstruida: this.state.form.areaConstruida,
+            descricao: this.state.form.descricao,
             idEstado: 1
         });
         if (response.status === 200) {
-            console.log(response.data.idImovel)
-            const response2 = await api.post('foto', {
-                url: this.state.foto,
-                idImovel: response.data.idImovel
-            });
-
-            if (response2.status === 200)
-                alert('Salvo');
+            await this.state.fotos.foto.map((item) => {
+                response2 = api.post('foto', {
+                    url: item,
+                    capa: this.state.fotos.capa[cont],
+                    idImovel: response.data.idImovel
+                });
+                cont++;
+            })
+            if (response2){
+                for (let i = 0; i < this.state.comodos.descricao.length; i++){
+                        response3 = await api.post('comodo', {
+                        descricao: this.state.comodos.descricao[i],
+                        qtd: this.state.comodos.qtd[i],
+                        idImovel: response.data.idImovel
+                    });
+                }
+                if(response3)
+                alert("salvou");
+            }
         }
     }
 
-    setForm(e) {
+    async setForm(e) {
         let dados = this.state.form;
+        let tamanho = this.fileInput.current.files.length;
+        let items = this.state.fotos;
 
         dados[e.target.name] = e.target.value;
         this.setState({ form: dados });
 
-        //Previw da Imagem
-        if (this.fileInput.current.files[0])
-            this.setState({ foto: (URL.createObjectURL(this.fileInput.current.files[0])) });
+        //função que converte imagem 
+        const convertBase64 = (file) => {
+            return new Promise((resolve, reject) => {
+                const fileReader = new FileReader();
+                fileReader.readAsDataURL(file);
+
+                fileReader.onload = () => {
+                    resolve(fileReader.result);
+                };
+
+                fileReader.onerror = (error) => {
+                    reject(error);
+                };
+            });
+        };
+
+        //Preview da Imagem
+        if (tamanho)
+            for (let i = 0; i < tamanho; i++) {
+                items.foto[i] = await convertBase64(this.fileInput.current.files[i]);//converte para salvar no banco
+
+                //define ultimo item como capa do site
+                if (i === tamanho - 1)
+                    items.capa[i] = true;
+                else
+                    items.capa[i] = false;
+                //salva os itens na state
+                this.setState({ fotos: items });
+            }
         else
-            this.setState({ foto: "" });
+            this.setState({ foto: [] });
+    }
+
+    setCapa(e) {
+        let items = this.state.fotos;
+        let tamanho = this.fileInput.current.files.length;
+
+        for (let i = 0; i < tamanho; i++) {
+            if (e.target.value == items.foto[i].length)
+                items.capa[i] = true;
+            else
+                items.capa[i] = false;
+        }
+        this.setState({ fotos: items });
+    }
+
+    setComodo(e) {
+        let comodo = this.state.comodos;
+
+        //procura item que já tem e aí exclui para não ter item repetidos e 
+        //abaixo adiciona ele novamente atualizado
+        for(let i = 0; i < comodo.qtd.length; i++){
+            if(comodo.descricao[i] === e.target.name){
+                comodo.descricao.splice(i,1);
+                comodo.qtd.splice(i,1);
+            }
+        }
+        //adiciona item na state
+        if(e.target.value > 0){
+            comodo.descricao.push(e.target.name);
+            comodo.qtd.push(e.target.value);
+        }
+
+        this.setState({ comodos: comodo });
     }
 
     render() {
@@ -87,9 +173,75 @@ class Venda extends Component {
                                             <input onChange={this.setForm} name="areaConstruida" type="text" className="form-control" />
                                         </div>
                                         <div className="mb-3">
-                                            <img style={{ width: "100px" }} src={this.state.foto}></img><br></br>
-                                            <label htmlFor="formFile" className="form-label">Escolha uma foto</label>
-                                            <input onChange={this.setForm} name="foto" ref={this.fileInput} className="form-control" type="file" id="formFile" />
+                                            <label className="form-label">Descrição do Imóvel</label>
+                                            <input onChange={this.setForm} name="descricao" type="text" className="form-control" />
+                                        </div>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">Sala</span>
+                                            <select onChange={this.setComodo} name="Sala" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                                                <option defaultValue="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                            </select>
+                                            <span class="input-group-text">Quarto</span>
+                                            <select onChange={this.setComodo} name="Quarto" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                                                <option defaultValue="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                            </select>
+                                            <span class="input-group-text">Area Gourmet</span>
+                                            <select onChange={this.setComodo} name="Area Gourmet" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                                                <option defaultValue="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                            </select>
+                                        </div>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">Banheiro</span>
+                                            <select onChange={this.setComodo} name="Banheiro" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                                                <option defaultValue="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                            </select>
+                                            <span class="input-group-text">Garagem</span>
+                                            <select onChange={this.setComodo} name="Garagem" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                                                <option defaultValue="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                            </select>
+                                            <span class="input-group-text">Copa</span>
+                                            <select onChange={this.setComodo} name="Copa" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                                                <option defaultValue="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                            </select>
+                                        </div>
+                                        <div className="mb-2">
+                                            {
+                                                this.state.fotos.foto.map((item) =>
+                                                    <div>
+                                                        <div className="btn-toolbar mb-2" role="toolbar" aria-label="Toolbar with button groups">
+                                                            <div className="btn-group me-2" role="group" aria-label="First group">
+                                                                <img style={{ width: "120px", height: "90px" }} src={item} className="img-thumbnail"></img>
+                                                            </div>
+                                                            <div className="input-group" style={{ width: "320px", height: "90px" }}>
+                                                                <div className="input-group-text" id="btnGroupAddon">
+                                                                    <input onClick={this.setCapa} value={item.length} className="form-check-input" type="radio" name="capa" id="flexRadioDefault2" defaultChecked />
+                                                                </div>
+                                                                <input type="text" className="form-control" placeholder="Escolher como capa do anuncio" aria-label="Input group example" aria-describedby="btnGroupAddon" disabled />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            }
+                                            <br></br>
+                                            <input onChange={this.setForm} name="foto" ref={this.fileInput} className="form-control" type="file" id="formFileMultiple" multiple />
                                         </div>
                                         <div className="d-grid gap-2 d-md-flex justify-content-md-end">
                                             <Link to="/" className="btn btn-danger me-md-2" type="button">Cancelar</Link>
