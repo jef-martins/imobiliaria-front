@@ -13,7 +13,7 @@ class Destaque extends Component {
     }
 
     async componentDidMount() {
-        const response = await api.get('comodo');
+        const response = await api.get('comodo/'+this.props.idDestaque);
         this.setState({ comodos: response.data });
     }
 
@@ -28,9 +28,9 @@ class Destaque extends Component {
                         </div>
                         <div className="col-md-8">
                             <div className="card-body">
-                                <label className="card-title bg-secondary text-white texto">Ref.: 151515</label>&nbsp;
-                                <label className="card-title bg-info text-white texto">Apartamento</label>
-                                <div className="card-title direita"><h3><strong>R$ 150.000,00</strong></h3></div>
+                                <label className="card-title bg-secondary text-white texto">Ref.: {this.props.referencia}</label>&nbsp;
+                                <label className="card-title bg-info text-white texto" style={{ textTransform: "capitalize" }}>{this.props.tipoImovel}</label>
+                                <div className="card-title direita"><h4><strong>{this.props.preco.toLocaleString('PT-BR',{style: 'currency', currency: 'BRL'})}</strong></h4></div>
                                 <label className="card-text"><h4>Jardim Domingos de Léo,&nbsp;</h4></label>
                                 <label>Marilia - SP</label>
                                 <div>

@@ -18,7 +18,7 @@ function Locacao() {
                         <Menu />
                     </div>
                     <div className="col-9">
-                        <Itens qtd="65"/>
+                        <Itens />
                     </div>
                 </div>
             </div>

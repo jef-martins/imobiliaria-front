@@ -18,7 +18,7 @@ function Venda() {
                         <Menu />
                     </div>
                     <div className="col-9">
-                        <Itens qtd="140"/>
+                        <Itens />
                     </div>
                 </div>
             </div>

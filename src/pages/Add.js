@@ -17,7 +17,9 @@ class Venda extends Component {
                 preco: '',
                 area: '',
                 areaConstruida: '',
-                descricao: ''
+                descricao: '',
+                tipoImovel: 'apartamento',
+                negocio: 'locacao'
             },
             fotos: {
                 foto: [],
@@ -26,78 +28,106 @@ class Venda extends Component {
             comodos: {
                 descricao: [],
                 qtd: []
-            },
-            arrComodos:[]
+            }
         }
         this.setForm = this.setForm.bind(this);
         this.onSave = this.onSave.bind(this);
         this.setCapa = this.setCapa.bind(this);
         this.setComodo = this.setComodo.bind(this);
+        this.previewImage = this.previewImage.bind(this);
         this.fileInput = React.createRef();
     }
 
     onSave = async () => {
-        let cont = 0;
-        let response2, response3;
+        const formulario = this.state.form;
+        let res;
+
         const response = await api.post('imovel', {
-            referencia: this.state.form.referencia,
-            preco: this.state.form.preco,
-            area: this.state.form.area,
-            areaConstruida: this.state.form.areaConstruida,
-            descricao: this.state.form.descricao,
+            referencia: formulario.referencia,
+            preco: formulario.preco,
+            area: formulario.area,
+            areaConstruida: formulario.areaConstruida,
+            descricao: formulario.descricao,
+            tipoImovel: formulario.tipoImovel,
+            negocio: formulario.negocio,
             idEstado: 1
         });
-        if (response.status === 200) {
-            await this.state.fotos.foto.map((item) => {
-                response2 = api.post('foto', {
-                    url: item,
-                    capa: this.state.fotos.capa[cont],
-                    idImovel: response.data.idImovel
-                });
-                cont++;
-            })
-            if (response2){
-                for (let i = 0; i < this.state.comodos.descricao.length; i++){
-                        response3 = await api.post('comodo', {
-                        descricao: this.state.comodos.descricao[i],
-                        qtd: this.state.comodos.qtd[i],
-                        idImovel: response.data.idImovel
-                    });
-                }
-                if(response3)
-                alert("salvou");
-            }
+        if (response.status === 200){
+            res = this.onSaveFoto(response.data.idImovel);
+
+            if(!res)
+                return; 
         }
+        
+        if (response.status === 200) {
+            res = this.onSaveComodo(response.data.idImovel);
+            if(!res)
+                return;
+        }
+        
+        alert("salvou");
     }
 
-    async setForm(e) {
+    async onSaveFoto(idImovel){
+        let cont = 0;
+        let response;
+
+        await this.state.fotos.foto.map((item) => {
+            response = api.post('foto', {
+                url: item,
+                capa: this.state.fotos.capa[cont],
+                idImovel: idImovel
+            });
+            cont++;
+        })
+        return response;
+    }
+
+    async onSaveComodo(idImovel){
+        let response;
+
+        for (let i = 0; i < this.state.comodos.descricao.length; i++) {
+            const response = await api.post('comodo', {
+                descricao: this.state.comodos.descricao[i],
+                qtd: this.state.comodos.qtd[i],
+                idImovel: idImovel
+            });
+        }
+        return response;
+    }
+
+    //função que converte imagem 
+    convertBase64 (file) {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+        });
+    }
+
+    setForm(e) {
         let dados = this.state.form;
-        let tamanho = this.fileInput.current.files.length;
-        let items = this.state.fotos;
 
         dados[e.target.name] = e.target.value;
         this.setState({ form: dados });
 
-        //função que converte imagem 
-        const convertBase64 = (file) => {
-            return new Promise((resolve, reject) => {
-                const fileReader = new FileReader();
-                fileReader.readAsDataURL(file);
+        this.previewImage();
+    }
 
-                fileReader.onload = () => {
-                    resolve(fileReader.result);
-                };
-
-                fileReader.onerror = (error) => {
-                    reject(error);
-                };
-            });
-        };
-
+    async previewImage(){
+        let items = this.state.fotos;
+        let tamanho = this.fileInput.current.files.length;
         //Preview da Imagem
         if (tamanho)
             for (let i = 0; i < tamanho; i++) {
-                items.foto[i] = await convertBase64(this.fileInput.current.files[i]);//converte para salvar no banco
+                items.foto[i] = await this.convertBase64(this.fileInput.current.files[i]);//converte para salvar no banco
 
                 //define ultimo item como capa do site
                 if (i === tamanho - 1)
@@ -129,14 +159,14 @@ class Venda extends Component {
 
         //procura item que já tem e aí exclui para não ter item repetidos e 
         //abaixo adiciona ele novamente atualizado
-        for(let i = 0; i < comodo.qtd.length; i++){
-            if(comodo.descricao[i] === e.target.name){
-                comodo.descricao.splice(i,1);
-                comodo.qtd.splice(i,1);
+        for (let i = 0; i < comodo.qtd.length; i++) {
+            if (comodo.descricao[i] === e.target.name) {
+                comodo.descricao.splice(i, 1);
+                comodo.qtd.splice(i, 1);
             }
         }
         //adiciona item na state
-        if(e.target.value > 0){
+        if (e.target.value > 0) {
             comodo.descricao.push(e.target.name);
             comodo.qtd.push(e.target.value);
         }
@@ -175,6 +205,23 @@ class Venda extends Component {
                                         <div className="mb-3">
                                             <label className="form-label">Descrição do Imóvel</label>
                                             <input onChange={this.setForm} name="descricao" type="text" className="form-control" />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label className="form-label">Tipo Imovel</label>
+                                            <select onChange={this.setForm} name="tipoImovel" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                                                <option defaultValue="apartamento">Apartamento</option>
+                                                <option value="casa">Casa</option>
+                                                <option value="terreno">Terreno</option>
+                                                <option value="kitnet">Kitnet</option>
+
+                                            </select>
+                                        </div>
+                                        <div className="mb-3">
+                                            <label className="form-label">Negócio</label>
+                                            <select onChange={this.setForm} name="negocio" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                                                <option defaultValue="locacao">Aluguel</option>
+                                                <option value="venda">Venda</option>
+                                            </select>
                                         </div>
                                         <div class="input-group mb-3">
                                             <span class="input-group-text">Sala</span>
@@ -225,7 +272,7 @@ class Venda extends Component {
                                         <div className="mb-2">
                                             {
                                                 this.state.fotos.foto.map((item) =>
-                                                    <div>
+                                                    <div key={item}>
                                                         <div className="btn-toolbar mb-2" role="toolbar" aria-label="Toolbar with button groups">
                                                             <div className="btn-group me-2" role="group" aria-label="First group">
                                                                 <img style={{ width: "120px", height: "90px" }} src={item} className="img-thumbnail"></img>

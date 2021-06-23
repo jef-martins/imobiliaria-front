@@ -19,8 +19,8 @@ class Home extends Component {
         <Logo />
         <Slider />
         <PesquisaAvancada />
-        <Destaque descricao="DESTAQUES PARA VENDA" foto={Road}/>
-        <Destaque descricao="DESTAQUES PARA LOCAÇÃO" foto={Road}/>
+        <Destaque descricao="DESTAQUES PARA VENDA" foto={Road} preco={150000.00}/>
+        <Destaque descricao="DESTAQUES PARA LOCAÇÃO" foto={Road} preco={150000.00}/>
         <div className="container">
           <div className="row row-cols-1 row-cols-md-3 g-4">
             <Card titulo="Quem somos" descricao="Marília Imóveis, esta é a nossa marca no mercado imobiliário desde 2002." />
